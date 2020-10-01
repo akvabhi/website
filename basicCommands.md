@@ -1,3 +1,6 @@
+- [Basic Git Commands](#basic-git-commands)
+  - [Advanced Git Commands](#advanced-git-commands)
+
 # Basic Git Commands
 
 1. Initialising a repo
