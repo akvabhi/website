@@ -247,4 +247,297 @@ i.e.
 
 More Info : https://www.thegeekstuff.com/2009/06/15-practical-crontab-examples
 
+15. toFixed(2) not a function.
+
+Try Number(value).toFixed(2)
+
+16. cron job
+
+You can also check a cron job command by hitting from terminal
+
+17. To log order of execution of files
+console.log(moment().format('h:mm:ss a'));
+
+18. To convert $200,900,999.00 to 200900999
+amount.slice(1).replace(/,/g, '').split('.',1)[0];
+slice -> remove $
+replace -> remove commas
+split -> split by . and only take 1st part
+
+19. [SQL] Update json field at 1st level (row->primary_contact->>email)
+
+update business_entity set primary_contact = jsonb_set(primary_contact, '{email}', '"abhishek.kumar@indifi.com"')
+where id in ('5e769aec-f7f3-463a-9023-fa23ed869227');
+
+update agencies set emails = jsonb_set(emails, '{to}', '["support@archiagency.com","abd@archiagency.com"]')
+where id in ('6a146a04-02e0-4bab-b52c-ea848badf2cd');
+
+20. Regex added to money
+
+var num = 23456567789.00;
+console.log(num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) // International
+console.log(num.toString().replace(/(\d)(?=(\d\d)+\d$)/g, "$1,")) // Indian
+
+21. launch.json
+
+{
+"version": "0.1.0",
+"configurations": [
+{
+"name": "Debug All",
+"type": "node2",
+"program": "${workspaceRoot}/debugall.js",
+"stopOnEntry": false,
+"args": [],
+"cwd": "${workspaceRoot}/",
+"runtimeExecutable": null,
+"runtimeArgs": [
+"--nolazy"
+],
+"env": {
+"NODE_ENV": "development",
+"LOGSQL": "false",
+"USE_COMPRESSION": "false",
+},
+"sourceMaps": false,
+"outDir": null,
+"console": "internalConsole"
+}
+]
+}
+
+22. Regex for 6 consecutive numbers
+console.log(str.replace(/\d{6}/, ""));
+
+23. split string by comma or space
+
+str.split(/[ ,]+/).filter(Boolean);
+// .filter is used to remove empty elements due to trailing comma at the end
+
+24. Check if an array is empty or not in JavaScript
+
+typeof emptyArray != "undefined" && emptyArray != null && emptyArray.length != null && emptyArray.length > 0
+
+Array.isArray(emptyArray) && emptyArray.length
+
+25. Remove duplicate objects from array
+
+uniqueArray = Array.from(new Set(books.map(JSON.stringify))).map(JSON.parse);
+
+26. Set default value of objects
+
+<script>
+var drawDiv = function(config){
+
+var defaultValues = {
+height: 100,
+width: 100,
+margin: 10,
+padding: 10
+};
+
+config = Object.assign(defaultValues,config)
+console.log(config)
+}
+
+drawDiv({margin:0, padding: 0 })
+
+</script>JavaScriptCopy
+
+The Syntax for Object.assign():
+
+Object.assign(target, ...sources) // returns target object
+
+27. fileLog
+
+// with stringify only
+
+function fileLog(data) {
+// fileLog({name:'result',value:result,stringify:true,uniqueName:true,ext:'json',append:false,force:true,showerr:true,})
+let fs = require('fs');
+let defaultValues = {
+name: 'data',
+stringify: true,
+ext: "json",
+uniqueName: false,
+append: false,
+showerr: true,
+force: false
+}
+
+data = Object.assign(defaultValues, data);
+
+// console.log(data);
+let filePath = global.Config.uploadDirPath + `${data.name}${data.uniqueName ? new Date().getTime() : ''}.${data.ext}`;
+console.log(`\n----------Creating ${filePath.split('/').pop()}------------------`);
+
+var value;
+if (data.stringify) {
+if (!data.force) {
+try {
+value = JSON.stringify(data.value);
+} catch (e) {
+try {
+if (data.showerr)
+console.log(`fileLog -> e`, e);
+value = data.value;
+} catch (e2) {
+throw e2
+}
+}
+} else {
+value = JSON.stringify(data.value);
+}
+} else {
+value = data.value;
+}
+if (data.append) {
+fs.writeFileSync(filePath, value, {
+flag: 'a'
+}, (err) => {
+if (err) {
+if (showerr) console.log(`[append] fileLog -> err`, err);
+throw err;
+}
+})
+} else {
+fs.writeFileSync(filePath, value, (err) => {
+if (err) {
+if (showerr) console.log(`fileLog -> err`, err);
+throw err;
+}
+});
+}
+}
+
+// with circular
+// https://github.com/moll/json-stringify-safe
+
+function fileLog(data) {
+
+// fileLog({name:'result',value:result,stringify:true,uniqueName:true,ext:'json',append:false,force:true,showerr:true,})
+
+let fs = require('fs');
+let defaultValues = {
+name: 'data',
+stringify: true,
+ext: "json",
+uniqueName: false,
+append: false,
+showerr: true,
+force: false
+}
+
+data = Object.assign(defaultValues, data);
+
+// console.log(data);
+let filePath = global.Config.uploadDirPath + `${data.name}${data.uniqueName ? new Date().getTime() : ''}.${data.ext}`;
+console.log(`\n----------Creating ${filePath.split('/').pop()}------------------`);
+
+var value;
+if (data.stringify) {
+if (!data.force) {
+try {
+value = JSON.stringify(data.value);
+} catch (e) {
+try {
+if (data.showerr)
+console.log(`fileLog -> e`, e);
+// value = data.value;
+value = circular(data.value, null, 2);
+} catch (e2) {
+try {
+if (data.showerr)
+console.log(`fileLog -> e2`, e2);
+value = data.value;
+} catch (e3) {
+throw e3;
+}
+}
+}
+} else {
+value = JSON.stringify(data.value);
+}
+} else {
+value = data.value;
+}
+if (data.append) {
+fs.writeFileSync(filePath, value, {
+flag: 'a'
+}, (err) => {
+if (err) {
+if (showerr) console.log(`[append] fileLog -> err`, err);
+throw err;
+}
+})
+} else {
+fs.writeFileSync(filePath, value, (err) => {
+if (err) {
+if (showerr) console.log(`fileLog -> err`, err);
+throw err;
+}
+});
+}
+
+function circular(obj, replacer, spaces, cycleReplacer) {
+return JSON.stringify(obj, serializer(replacer, cycleReplacer), spaces)
+}
+function serializer(replacer, cycleReplacer) {
+var stack = [],
+keys = []
+
+if (cycleReplacer == null) cycleReplacer = function (key, value) {
+if (stack[0] === value) return "[Circular ~]"
+return "[Circular ~." + keys.slice(0, stack.indexOf(value)).join(".") + "]"
+}
+
+return function(key, value) {
+if (stack.length > 0) {
+var thisPos = stack.indexOf(this)
+~thisPos ? stack.splice(thisPos + 1) : stack.push(this)
+~thisPos ? keys.splice(thisPos, Infinity, key) : keys.push(key)
+if (~stack.indexOf(value)) value = cycleReplacer.call(this, key, value)
+}
+else stack.push(value)
+
+return replacer == null ? value : replacer.call(this, key, value)
+}
+}
+
+}
+
+28. Curl put Request
+
+curl -X PUT -H "Content-Type: application/json" -d '{"name":"mkyong","email":"abc@gmail.com"}' http://localhost:8080/user/100
+
+29. [SQL] Get all keys in json field in postgres
+
+select jsonb_object_keys(json_stuff) from table;
+
+30. Template Strings Don't Pretty Print Objects'
+To use objects either stringify them first or the object will be shown as [object Object]
+
+31. Clone object and delete key
+var clone = Object.assign({}, {a: 1, b: 2, c: 3});
+delete clone.b;
+
+32. run method in js file directly from terminal
+node -e 'require("./fileName")' -> this is module.exports
+
+33. [TIL]
+
+If we comment oAuth then req.user comes undefined
+req.body -> usually comes from form filled in the UI
+If timeout is occuring and all promises are correctly returning then change RabbitMQ.rpc to RabbitMQ.pushToQueue
+Socket error/ECONNECT (like in sending mail etc) is usually due to internet problem (no internet,firewal,antivirus,no vpn etc)
+
+34. [SQL]
+
+To use the result if the json column contains a given key.
+fv.details ? 'application_communication_id'
+
+35. Using logger
+let logger = Logger.getInstance({"api": "/cron-jobs/:code/invoke"});
+It can have keys like data,task,activityCode etc
+
 
