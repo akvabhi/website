@@ -540,4 +540,66 @@ fv.details ? 'application_communication_id'
 let logger = Logger.getInstance({"api": "/cron-jobs/:code/invoke"});
 It can have keys like data,task,activityCode etc
 
+37. [Snippet] Define object key if not exists
+var test = {};
+test.hello = test.hello || {};
+
+38. [Snippet] dummy promise to feed hardcoded value to .then chain
+(can remove return from beggining)
+return new Promise((resolve, reject) => {
+var result = {};
+resolve(result);
+})
+
+39. Hitting Prod function from localhost
+
+// we can't run insert/update based flow using technew
+
+var options = {
+// url: 'http://localhost:3002/fi/hold', // https://api.indifi.com/
+url: 'https://api.indifi.com/fi/hold',
+method: 'POST',
+headers: {
+// 'Authorization' : 'Bearer 4be3a8b606f971da9aef39e7266038c541c7f065', // Authorization : Bearer token // stg-dad 'Bearer b7f812ec77cc664ddbdd18b79ebadbb5c53da9d0'
+'Authorization' : 'Bearer b132bb6723faf31a0faecf24118708ee770de120',
+'Content-Type': 'application/x-www-form-urlencoded'//application/json; charset=utf-8
+},
+body: querystring.stringify({
+'appId': obj.appId,
+'verificationId' : typeof obj.verificationId == 'object' ? obj.verificationId : [obj.verificationId],
+'reason' : "Due to lockdown we are putting this case on hold. Once this is over we will re-initiate it again."
+})
+};
+request(options, (error, response, body) => {
+try {
+if (error) {
+console.log(`CLG : error`, error);
+console.log(`CLG : error.stfy `, JSON.stringify(error));
+// deferred.reject(error);
+} else if (response && response.statusCode !== 201 && response.statusCode !== 200) {
+console.log(`CLG : response`, response);
+console.log(`CLG : response.statusCode`, response.statusCode);
+//deferred.reject(new Error(body));
+// deferred.reject("{}");
+} else {
+body = JSON.parse(body);
+console.log(`CLG : body`, body);
+// deferred.resolve(body.response);
+}
+} catch (exception) {
+console.log(`CLG : exception`, exception);
+// deferred.reject(exception);
+}
+});
+
+40. Accept all linked in requests
+
+https://www.linkedin.com/mynetwork/invitation-manager/?invitationType=CONNECTION
+var x = document.getElementsByClassName('invitation-card__action-btn artdeco-button artdeco-button--2 artdeco-button--secondary ember-view'); for (var i=0 ; i<x.length; i++) x[i].click();
+
+41. [SQL] report for last 6 months
+where created_at + interval '6 months'> now()
+
+42. Creating Password Protected Zip Files in Mac
+zip -er NAMEOFZIPFILE.zip path/of/folder
 
